@@ -22,3 +22,8 @@ model Test {
   name String
   age  Int
 }
+
+model Task {
+  id    Int    @id @default(autoincrement())
+  title String
+}
