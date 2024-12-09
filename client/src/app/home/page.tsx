@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import api from "@/services/api";
 
 interface Task {
   id: number;
@@ -19,13 +20,51 @@ export default function CRUDTutorial() {
     fetchTasks();
   }, []);
 
-  const fetchTasks = async () => {};
+  const fetchTasks = async () => {
+    try {
+      const response = await api.get("/task");
+      setTasks(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  const addTask = async (e: React.FormEvent) => {};
+  const addTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTask) return;
 
-  const updateTask = async (e: React.FormEvent) => {};
+    try {
+      await api.post("/task", { title: newTask });
+      setNewTask("");
+      fetchTasks();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  const deleteTask = async (id: number) => {};
+  const updateTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTask) return;
+
+    try {
+      await api.patch(`/task/${editingTask.id}`, {
+        title: editingTask.title,
+      });
+      setEditingTask(null);
+      fetchTasks();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteTask = async (id: number) => {
+    try {
+      await api.delete(`/task/${id}`);
+      fetchTasks();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="container mx-auto p-4">
