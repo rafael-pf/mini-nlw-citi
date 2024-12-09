@@ -21,31 +21,47 @@ export default function MyTasks() {
   }, []);
 
   const fetchTasks = async () => {
-    const response = await api.get("/tasks");
-    setTasks(response.data.data);
+    try {
+      const response = await api.get("/task");
+      setTasks(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const addTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTask.trim()) return;
 
-    await api.post("/tasks", { title: newTask });
-    setNewTask("");
-    fetchTasks();
+    try {
+      await api.post("/task", { title: newTask });
+      setNewTask("");
+      fetchTasks();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const updateTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingTask?.title.trim()) return;
 
-    await api.patch(`/tasks/${editingTask.id}`, editingTask);
-    setEditingTask(null);
-    fetchTasks();
+    try {
+      await api.patch(`/task/${editingTask.id}`, editingTask);
+      setEditingTask(null);
+      fetchTasks();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const deleteTask = async (id: number) => {
-    await api.delete(`/tasks/${id}`);
-    fetchTasks();
+    try {
+      await api.delete(`/task/${id}`);
+      fetchTasks();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -75,7 +91,7 @@ export default function MyTasks() {
           <CardTitle>Tasks</CardTitle>
         </CardHeader>
         <CardContent>
-          {tasks.map((task) => (
+          {tasks?.map((task) => (
             <div
               key={task.id}
               className="flex items-center justify-between mb-2"
