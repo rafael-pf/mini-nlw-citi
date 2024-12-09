@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import api from "@/services/api";
 
 interface Task {
   id: number;
@@ -19,13 +20,33 @@ export default function MyTasks() {
     fetchTasks();
   }, []);
 
-  const fetchTasks = async () => {};
+  const fetchTasks = async () => {
+    const response = await api.get("/tasks");
+    setTasks(response.data.data);
+  };
 
-  const addTask = async (e: React.FormEvent) => {};
+  const addTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTask.trim()) return;
 
-  const updateTask = async (e: React.FormEvent) => {};
+    await api.post("/tasks", { title: newTask });
+    setNewTask("");
+    fetchTasks();
+  };
 
-  const deleteTask = async (id: number) => {};
+  const updateTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTask?.title.trim()) return;
+
+    await api.patch(`/tasks/${editingTask.id}`, editingTask);
+    setEditingTask(null);
+    fetchTasks();
+  };
+
+  const deleteTask = async (id: number) => {
+    await api.delete(`/tasks/${id}`);
+    fetchTasks();
+  };
 
   return (
     <div className="container mx-auto p-4">
